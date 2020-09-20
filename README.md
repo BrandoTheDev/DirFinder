@@ -6,7 +6,8 @@ dirfinder is a penny version of gobuster/dirbuster
 *In its current form it stands more of a POC than a program/script.*
 
 To use:
-Using your favorite shell, inside the dirfinder directory run ->   python3 dirfinder.py https://www.website.com
+Using your favorite shell, inside the dirfinder directory run 
+->   python3 dirfinder.py https://www.website.com
 
 Features:
 - Reads extensions from a file
