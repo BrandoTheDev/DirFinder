@@ -1,40 +1,55 @@
 import requests
+import sys
 
-def website_extraction(url):
-        print(f"[*] Finding website: {url} ...")
-        if url == "":
-            print("Please enter a url or --help for options")
-        elif url.startswith("www."):
-            return f"https://{url}"
-        elif url.startswith("http"):
+success_sites = []
+
+def website_extraction(website):
+        print(f"[*] Finding website: {website}")
+        if website == "":
+            print("Please enter a url")
+        elif website.startswith("www."):
+            url = requests.get(f"https://{website}")
             return url
-        elif url == "-h" or url == "--help":
-            help_options()
+        elif website.startswith("http"):
+            url = requests.get(website)
+            return url
         else:
-            return f"https://www.{url}"
+            url = requests.get(f"https://www.{website}")
+            return url
 
 def host_exists(url):
-        print("[*] Checking websites status...")
+        print("[*] Checking website status...")
         if url.status_code == 200:
-            print(f"[*] {url} -> 200: Success!")
+            print(f"[*] 200 -> Success!")
             return True
         elif url.status_code == 301:
-            print(f"[*] {url} -> 301: Moved Permanently")
+            print(f"[*] 301 -> Moved Permanently")
         elif url.status_code == 302:
-            print(f"[*] {url} -> 302: Moved Temporarily")
+            print(f"[*] 302 -> Moved Temporarily")
+        elif url.status_code == 400:
+            print(f"[*] 400 -> Bad Request")
         elif url.status_code == 403:
-            print(f"[*] {url} -> 403: Forbidden")
+            print(f"[*] 403 -> Forbidden")
         elif url.status_code == 404:
-            print(f"[*] {url} -> 404: Not Found")
+            print(f"[*] 404 -> Not Found")
         elif url.status_code == 500:
-            print(f"[*] {url} -> 500: Internal Server Error")
+            print(f"[*] 500 -> Internal Server Error")
         elif url.status_code == 503:
-            print(f"[*] {url} -> 503: Service Unavailable")
+            print(f"[*] 503 -> Service Unavailable")
         return False
         
 
+def check_dirs(website):
+    with open("namelist.txt") as namelist:
+        for ext in namelist:
+            if host_exists(website_extraction(f"{website}/{ext}")):
+                success_sites.append(f"{website}/{ext}")
+        print(f"[*] Found {len(success_sites)} directories for {website}")
+        if len(success_sites) >= 50:
+            print("Results over 50. Possible false positives. Manually Review!")
+        elif len(success_sites) >= 1:
+            for site in success_sites:
+                print(f"[*] Discovered: {site}")
 
 
-def help_options():
-    pass
-    
+check_dirs(str(sys.argv[1]))
