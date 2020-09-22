@@ -3,39 +3,40 @@ import sys
 
 success_sites = []
 
+
+http_codes = {
+    200 : "-> Success!",
+    301 : "-> Moved Permanently",
+    302 : "-> Moved Temporarily",
+    400 : "-> Bad Request",
+    403 : "-> Forbidden",
+    404 : "-> Not Found",
+    500 : "-> Internal Server Error",
+    503 :" -> Service Unavailable"
+}
+
+
 def website_extraction(website):
         print(f"[*] Finding website: {website}")
         if website == "":
             print("Please enter a url")
         elif website.startswith("www."):
-            url = requests.get(f"https://{website}")
-            return url
+            website_to_get = f"https://{website}"
         elif website.startswith("http"):
-            url = requests.get(website)
-            return url
+            site = website_to_get
         else:
-            url = requests.get(f"https://www.{website}")
-            return url
+            website_to_get = f"https://www.{website}"
+        url = requests.get(website_to_get)
+        return url
+
 
 def host_exists(url):
         print("[*] Checking website status...")
         if url.status_code == 200:
-            print(f"[*] 200 -> Success!")
+            print(f"[*] {http_codes[200]}")
             return True
-        elif url.status_code == 301:
-            print(f"[*] 301 -> Moved Permanently")
-        elif url.status_code == 302:
-            print(f"[*] 302 -> Moved Temporarily")
-        elif url.status_code == 400:
-            print(f"[*] 400 -> Bad Request")
-        elif url.status_code == 403:
-            print(f"[*] 403 -> Forbidden")
-        elif url.status_code == 404:
-            print(f"[*] 404 -> Not Found")
-        elif url.status_code == 500:
-            print(f"[*] 500 -> Internal Server Error")
-        elif url.status_code == 503:
-            print(f"[*] 503 -> Service Unavailable")
+        else:
+            print(f"[*] {http_codes[url.status_code]}")
         return False
         
 
